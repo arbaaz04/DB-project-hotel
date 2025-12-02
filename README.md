@@ -13,235 +13,154 @@
 ## 📋 Prerequisites
 
 - Node.js (v14 or higher)
-- PostgreSQL database (Supabase)
-- npm or yarn
+# Hotel Management System - Setup & Usage Guide
 
-## 🚀 Quick Start
+This repository contains a thin Node.js backend, a Vite + React frontend, and SQL scripts for the PostgreSQL/Supabase database used by the application.
 
-### 1. Update Supabase Database
+Overview:
+- `hms-backend/` - Express server that exposes a thin API and depends on PostgreSQL functions
+- `hms-frontend/` - Vite + React frontend (Tailwind CSS, Heroicons)
+- SQL files at repository root - schema, triggers and PL/pgSQL functions (including `supabase-auth.sql`)
+- `start_hotel` - convenience Bash script to install deps and launch backend + frontend (requires a POSIX shell)
 
-Copy and paste the content from `supabase-auth.sql` into your Supabase SQL Editor and run it:
+----
 
-```sql
--- This adds new functions for:
--- - authenticate_staff (login)
--- - manage_guest (create/update guests)
--- - get_reservation_details (full reservation info)
--- - get_reservation_charges (all charges)
--- - get_reservation_payments (all payments)
+## Summary: can I run `./start_hotel` on a fresh Windows, macOS, or Linux PC and it will do everything?
+
+Short answer: **yes!** The new `start_hotel` script (and `start_hotel.bat` on Windows) is cross-platform and will:
+- Automatically install Node dependencies if missing
+- Check for the `DATABASE_URL` environment variable and provide clear instructions if it is missing
+- Start both backend and frontend services
+- Display live logs from both
+- Stop cleanly when you press Ctrl+C
+
+What you need for a successful fresh install:
+- Node.js and npm installed (recommended Node 16 or 18+)
+- A running PostgreSQL instance (or Supabase) with the database schema/functions applied
+- A `DATABASE_URL` environment variable or a `.env` file in `hms-backend/` pointing to your database
+
+Once those are ready, you can simply run:
+- macOS/Linux: `./start_hotel`
+- Windows: `start_hotel.bat` or `./start_hotel` (if using Git Bash / WSL)
+
+----
+
+## Prerequisites
+
+- Node.js (recommended 16 or 18+), npm
+- PostgreSQL (or a Supabase project)
+- Git (to clone the repo)
+- A POSIX shell to run `start_hotel` (macOS, Linux, or Windows WSL / Git Bash)
+
+----
+
+## Database setup
+
+1. If you are using Supabase, open the SQL editor and run the SQL files in this repository as appropriate. At minimum run the schema and functions that your deployment needs:
+   - `supabase-tables.sql` (create tables)
+   - `supabase-plsql.sql` (PL/pgSQL helper functions)
+   - `supabase-crud.sql` (CRUD helpers)
+   - `supabase-triggers.sql` (triggers)
+   - `supabase-auth.sql` (authentication functions used by the backend)
+
+2. If using a local PostgreSQL instance, run the same SQL files against your database.
+
+3. Create a `DATABASE_URL` for the backend. Example format:
+
+```
+postgres://<db_user>:<db_password>@<db_host>:5432/<db_name>
 ```
 
-Your existing SQL files remain unchanged:
-- ✅ `supabase-tables.sql` - No changes needed
-- ✅ `supabase-plsql.sql` - No changes needed
-- ✅ `supabase-crud.sql` - No changes needed
-- ✅ `supabase-triggers.sql` - No changes needed
-- 🆕 `supabase-auth.sql` - NEW - Run this!
+Place this into a `.env` file inside `hms-backend/` (the backend uses `dotenv`). Example `hms-backend/.env`:
 
-### 2. Configure Environment
-
-Make sure your `/hms-backend/.env` file is configured:
-
-```env
-DB_HOST=your-supabase-host
-DB_PORT=5432
-DB_NAME=postgres
-DB_USER=postgres
-DB_PASSWORD=your-password
+```
+DATABASE_URL=postgres://postgres:password@localhost:5432/postgres
 PORT=4000
 ```
 
-### 3. Start the Application
+Note: `hms-backend/db.js` will throw and exit if `DATABASE_URL` is not set.
+
+----
+
+## Running the project
+
+Recommended approach (all platforms: macOS, Linux, Windows):
 
 ```bash
-chmod +x start_hotel
 ./start_hotel
 ```
 
+On Windows, you can also use:
+
+```cmd
+start_hotel.bat
+```
+
 The script will:
-- Check and install all dependencies (including @heroicons/react)
-- Start backend on http://localhost:4000
-- Start frontend on http://localhost:5173
-- Display logs and PIDs
+- Check for `DATABASE_URL` and exit with a clear message if it is not set
+- Run `npm install` in `hms-backend` and `hms-frontend` if `node_modules` are missing
+- Start the backend (Node) on port `4000`
+- Start the frontend (Vite) on port `5173`
+- Display live logs from both services
+- Stop both services cleanly when you press Ctrl+C
 
-### 4. Login
+Important: the backend requires `DATABASE_URL` to be set in `hms-backend/.env`. If it is missing, the script will exit with a clear error message and instructions.
 
-Use your existing staff credentials from the database:
-- Username: (from your `staff` table)
-- Password: (from your `staff` table)
+If you prefer to start services manually:
 
-## 📁 Updated Files
+1. Install dependencies:
 
-### Frontend
-- ✅ `src/App.jsx` - Auth integration, Apple-style sidebar
-- ✅ `src/pages/Login.jsx` - NEW - Login page
-- ✅ `src/pages/Dashboard.jsx` - Complete redesign with detail modal
-- ✅ `src/pages/Booking/ReservationForm.jsx` - Guest management workflow
-- ✅ `src/pages/Booking/CheckInOut.jsx` - Apple-style redesign
-- ✅ `src/pages/Admin/InventoryManager.jsx` - Redesigned with tabs
-- ✅ `src/context/AuthContext.jsx` - NEW - Authentication context
-- ✅ `src/components/Table.jsx` - Updated styles
-- ✅ `src/components/Modal.jsx` - Heroicons, better scrolling
-- ✅ `src/components/Button.jsx` - Apple-style buttons
-- ✅ `src/components/Alert.jsx` - Heroicons, better design
-- ✅ `src/index.css` - Inter font, custom scrollbars
-- ✅ `src/api/apiService.js` - Auth and detail endpoints
-
-### Backend
-- ✅ `routes/auth.js` - NEW - Login and guest management
-- ✅ `routes/read.js` - Detail endpoints added
-- ✅ `server.js` - Auth router integrated
-
-### Database
-- ✅ `supabase-auth.sql` - NEW - Authentication functions
-
-## 🎯 Key Features
-
-### 1. Authentication
-- Staff must login to access the system
-- Session persists in localStorage
-- Logout functionality
-- Staff info displayed in sidebar
-
-### 2. Dashboard
-- Click any reservation row to see complete details:
-  - Guest information (name, email, phone)
-  - Room details (number, type)
-  - Stay information (scheduled + actual dates)
-  - Financial summary (charges, payments, balance)
-  - Complete charges table
-  - Complete payments table
-- Filter by status
-- Search by guest, room, or ID
-- Real-time stats
-
-### 3. New Booking Workflow
-**Step 1: Guest Selection**
-- Search existing guests by name, email, or NIC
-- Or create a new guest with required details
-
-**Step 2: Reservation Details**
-- Select room type
-- Choose check-in and check-out dates
-- Review guest information
-
-**Step 3: Confirmation**
-- Review all details
-- Confirm and create reservation
-- Uses logged-in staff automatically
-
-### 4. Check-In/Out
-- Process guest check-ins
-- Handle check-outs with payment
-- View stay duration
-- Room status management
-
-### 5. Admin/Inventory
-**Service Items Tab:**
-- Add/edit/delete minibar items
-- Set prices
-
-**Room Management Tab:**
-- Add new rooms
-- Update room configurations
-- Mark rooms as clean after checkout
-- View room status
-
-## 🎨 Design System
-
-### Colors
-- Primary: Blue (600-700)
-- Success: Green
-- Warning: Amber
-- Error: Red
-- Background: Slate (50-100)
-- Text: Slate (600-900)
-
-### Typography
-- Font: Inter (SF Pro-inspired)
-- Headings: 600 weight, tight tracking
-- Body: 400 weight, comfortable line-height
-
-### Components
-- Rounded corners: lg (8px), xl (12px)
-- Shadows: Subtle, layered
-- Borders: Slate-200
-- Hover: Slight background change
-- Active: Blue accent with shadow
-
-## 📊 Database Architecture
-
-Your thin backend approach is maintained:
-- All business logic in PostgreSQL functions
-- Backend provides thin API layer
-- Triggers handle automation
-- Functions handle validation
-
-## 🔧 Troubleshooting
-
-### Dependencies Not Installing
 ```bash
-cd hms-frontend
-npm install @heroicons/react
-cd ../hms-backend
+cd hms-backend
+npm install
+
+cd ../hms-frontend
 npm install
 ```
 
-### Login Not Working
-1. Check if `supabase-auth.sql` is run in Supabase
-2. Verify staff records exist in database
-3. Check backend logs: `cat backend.log`
+2. Start the backend (in one terminal):
 
-### UI Not Updating
-1. Clear browser cache
-2. Check console for errors
-3. Verify all component imports
-
-### Port Already in Use
-```bash
-# Find and kill process on port 4000
-lsof -ti:4000 | xargs kill -9
-
-# Find and kill process on port 5173
-lsof -ti:5173 | xargs kill -9
+Windows (PowerShell):
+```powershell
+cd hms-backend
+node server.js
 ```
 
-## 🛠️ Development
-
-### Frontend Development
-```bash
-cd hms-frontend
-npm run dev
-```
-
-### Backend Development
+Linux/macOS or WSL:
 ```bash
 cd hms-backend
 node server.js
 ```
 
-### Build for Production
+3. Start the frontend (in another terminal):
+
 ```bash
 cd hms-frontend
-npm run build
+npm run dev
 ```
 
-## 📝 Notes
+4. Visit: `http://localhost:5173`
 
-- The start_hotel script automatically handles dependency installation
-- @heroicons/react is added to package.json and will be installed automatically
-- All SQL files use your existing style and naming conventions
-- Thin backend architecture is preserved
-- All validation happens in PostgreSQL
+----
 
-## 🎉 Success!
+## Development notes
 
-Your Hotel Management System now features:
-- ✨ Modern, Apple-inspired UI
-- 🔐 Secure authentication
-- 📊 Complete data visibility
-- 🔄 Smooth user workflows
-- 📱 Responsive design
-- ⚡ Fast and efficient
+- Backend port: `4000` (configurable via `hms-backend/.env`)
+- Frontend port: `5173` (Vite default)
+- The start script will tell you if ports are already in use
+- Ctrl+C will cleanly shut down both services
 
-Visit http://localhost:5173 and enjoy your upgraded system!
+Troubleshooting tips:
+- If the script says "DATABASE_URL not set", create `hms-backend/.env` with the correct `DATABASE_URL`.
+- If a port is already in use, stop the process using that port or change the port in the `.env` file.
+
+----
+
+## Project structure (high level)
+
+- `hms-backend/` — Express server, routes, connects to PostgreSQL
+- `hms-frontend/` — React + Tailwind frontend
+- SQL files (root) — schema, triggers and PL/pgSQL functions
+- `start_hotel` — Bash wrapper script (calls `start_hotel.js`)
+- `start_hotel.bat` — Windows batch file wrapper (calls `start_hotel.js`)
+- `start_hotel.js` — Cross-platform Node.js script that handles platform-specific logic and starts services
