@@ -22,9 +22,48 @@ function checkNodeInstalled() {
   try {
     execSync('node --version', { encoding: 'utf-8' }).trim();
   } catch (err) {
-    console.error('Error: Node.js is not installed');
-    console.error('Please download and install Node.js from https://nodejs.org/');
+    console.log('Node.js not found. Installing...');
+    installNodeJs();
+  }
+}
+
+function installNodeJs() {
+  const isWindows = process.platform === 'win32';
+  const isMac = process.platform === 'darwin';
+  
+  if (isWindows) {
+    console.log('Opening Node.js download page for Windows...');
+    console.log('Please download and install from: https://nodejs.org/');
+    console.log('Then run this script again.');
     process.exit(1);
+  } else if (isMac) {
+    console.log('Installing Node.js via Homebrew...');
+    try {
+      // Check if Homebrew is installed
+      execSync('which brew', { stdio: 'ignore' });
+      execSync('brew install node', { stdio: 'inherit' });
+      console.log('Node.js installed successfully!');
+    } catch (err) {
+      console.log('Homebrew not found. Installing Homebrew first...');
+      try {
+        execSync('/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"', { stdio: 'inherit' });
+        execSync('brew install node', { stdio: 'inherit' });
+        console.log('Node.js installed successfully!');
+      } catch (e) {
+        console.error('Failed to install Node.js. Please install manually from https://nodejs.org/');
+        process.exit(1);
+      }
+    }
+  } else {
+    // Linux
+    console.log('Installing Node.js via package manager...');
+    try {
+      execSync('sudo apt-get update && sudo apt-get install -y nodejs npm', { stdio: 'inherit' });
+      console.log('Node.js installed successfully!');
+    } catch (err) {
+      console.error('Failed to install Node.js. Please install manually from https://nodejs.org/');
+      process.exit(1);
+    }
   }
 }
 
@@ -44,11 +83,15 @@ function checkDatabaseUrl() {
   }
 
   if (!hasDbUrl) {
-    console.error('Error: DATABASE_URL not set');
-    console.error(`Please create ${envPath} with:`);
-    console.error('  DATABASE_URL=postgres://user:pass@host:5432/dbname');
-    console.error('  PORT=4000');
-    process.exit(1);
+    console.log('Creating .env file...');
+    const envContent = `DATABASE_URL="postgresql://postgres:password@localhost:5432/hotel"
+PORT=4000
+`;
+    fs.writeFileSync(envPath, envContent);
+    console.log(`✓ Created ${envPath}`);
+    console.log('Please update DATABASE_URL with your actual Supabase/PostgreSQL credentials.');
+    console.log('Then run ./start_hotel again.');
+    process.exit(0);
   }
 }
 
