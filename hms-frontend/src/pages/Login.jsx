@@ -1,13 +1,8 @@
-// hms-frontend/src/pages/Login.jsx
 import React, { useState } from 'react';
 import { loginStaff } from '../api/apiService';
 import { useAuth } from '../context/AuthContext';
-import { Button, FormInput, Alert, Spinner } from '../components';
-import { 
-  UserIcon, 
-  LockClosedIcon, 
-  BuildingOfficeIcon 
-} from '@heroicons/react/24/outline';
+import { Alert } from '../components';
+import { BuildingOfficeIcon } from '@heroicons/react/24/outline';
 
 const Login = () => {
   const { login } = useAuth();
@@ -53,25 +48,28 @@ const Login = () => {
   };
 
   return (
-    <div className="min-h-screen bg-white flex items-center justify-center p-4">
+    <div className="min-h-screen bg-gray-100 flex items-center justify-center px-4">
       <div className="w-full max-w-md">
-        {/* Logo and Header */}
-        <div className="text-center mb-10">
-          <div className="inline-flex items-center justify-center w-16 h-16 bg-blue-600 rounded-xl shadow-sm mb-6">
-            <BuildingOfficeIcon className="w-9 h-9 text-white" />
+        {/* Header Section */}
+        <div className="text-center mb-8">
+          <div className="flex justify-center mb-6">
+            <div className="p-3 bg-blue-600 rounded-full shadow-lg">
+              <BuildingOfficeIcon className="w-8 h-8 text-white" />
+            </div>
           </div>
-          <h1 className="text-4xl font-700 text-gray-900 tracking-tight">
-            Hotel Management
+          <h1 className="text-3xl font-bold text-gray-900 mb-2">
+            Hotel Management System
           </h1>
-          <p className="text-base text-gray-600 mt-3 font-500">
-            Professional hotel operations made simple
+          <p className="text-gray-600 text-sm">
+            Sign in to your account to continue
           </p>
         </div>
 
         {/* Login Card */}
-        <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-8 space-y-6">
+        <div className="bg-white rounded-2xl shadow-lg p-8">
+          {/* Alert Messages */}
           {alert && (
-            <div>
+            <div className="mb-6">
               <Alert
                 type={alert.type}
                 title={alert.title}
@@ -81,60 +79,53 @@ const Login = () => {
             </div>
           )}
 
-          <form onSubmit={handleSubmit} className="space-y-5">
+          {/* Form */}
+          <form onSubmit={handleSubmit} className="space-y-4">
             {/* Username Field */}
             <div>
-              <label htmlFor="username" className="block text-sm font-600 text-gray-900 mb-2">
+              <label className="block text-sm font-semibold text-gray-700 mb-2 pl-4">
                 Username
               </label>
-              <div className="relative">
-                <UserIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400 pointer-events-none" />
-                <input
-                  id="username"
-                  name="username"
-                  type="text"
-                  value={formData.username}
-                  onChange={handleChange}
-                  disabled={loading}
-                  className="block w-full pl-10 pr-4 py-2.5 border border-gray-300 rounded-lg text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-1 focus:ring-blue-600 focus:border-transparent transition-all disabled:opacity-50 disabled:cursor-not-allowed"
-                  placeholder="Enter username"
-                />
-              </div>
+              <input
+                type="text"
+                name="username"
+                value={formData.username}
+                onChange={handleChange}
+                disabled={loading}
+                placeholder="Enter your username"
+                className="w-full px-4 py-3 border border-gray-200 rounded-lg font-400 text-gray-900 placeholder-gray-500 transition-all focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:bg-gray-100 disabled:cursor-not-allowed"
+              />
             </div>
 
             {/* Password Field */}
             <div>
-              <label htmlFor="password" className="block text-sm font-600 text-gray-900 mb-2">
+              <label className="block text-sm font-semibold text-gray-700 mb-2 pl-4">
                 Password
               </label>
-              <div className="relative">
-                <LockClosedIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400 pointer-events-none" />
-                <input
-                  id="password"
-                  name="password"
-                  type="password"
-                  value={formData.password}
-                  onChange={handleChange}
-                  disabled={loading}
-                  className="block w-full pl-11 pr-4 py-2.5 border border-gray-300 rounded-lg text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-1 focus:ring-blue-600 focus:border-transparent transition-all disabled:opacity-50 disabled:cursor-not-allowed"
-                  placeholder="Enter password"
-                />
-              </div>
+              <input
+                type="password"
+                name="password"
+                value={formData.password}
+                onChange={handleChange}
+                disabled={loading}
+                placeholder="Enter your password"
+                className="w-full px-4 py-3 border border-gray-200 rounded-lg font-400 text-gray-900 placeholder-gray-500 transition-all focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:bg-gray-100 disabled:cursor-not-allowed"
+              />
             </div>
 
             {/* Submit Button */}
             <button
               type="submit"
               disabled={loading}
-              className="w-full bg-blue-600 hover:bg-blue-700 text-white font-600 py-2.5 px-4 rounded-lg transition-all duration-150 shadow-sm hover:shadow-sm disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center active:scale-95 mt-6"
+              className="w-full mt-6 px-4 py-3 bg-blue-600 text-white font-semibold rounded-lg transition-all duration-200 hover:bg-blue-700 active:scale-95 disabled:opacity-60 disabled:cursor-not-allowed flex items-center justify-center gap-2"
             >
               {loading ? (
                 <>
-                  <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                  <svg className="w-5 h-5 animate-spin" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                     <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                     <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                   </svg>
-                  Signing in...
+                  <span>Signing in...</span>
                 </>
               ) : (
                 'Sign In'
@@ -144,8 +135,8 @@ const Login = () => {
         </div>
 
         {/* Footer */}
-        <p className="text-center text-xs text-gray-500 mt-8">
-          Hotel Management System v1.0
+        <p className="text-center text-xs text-gray-600 mt-8">
+          Designed by Arbaaz, Gehna, Zayed
         </p>
       </div>
     </div>

@@ -194,7 +194,7 @@ const ReservationForm = ({ setView }) => {
   };
 
   return (
-    <div className="max-w-4xl mx-auto h-full overflow-y-auto py-4">
+    <div className="h-full flex flex-col space-y-4 pb-6">
       {alert && (
         <Alert
           type={alert.type}
@@ -206,191 +206,163 @@ const ReservationForm = ({ setView }) => {
         />
       )}
 
-      {/* Progress Steps */}
-      <div className="mb-8">
-        <div className="flex items-center justify-center">
-          {[1, 2, 3].map((s) => (
-            <React.Fragment key={s}>
-              <div className={`flex items-center justify-center w-10 h-10 rounded-full ${
-                step >= s ? 'bg-blue-600 text-white' : 'bg-gray-200 text-gray-600'
-              } font-700`}>
-                {s}
-              </div>
-              {s < 3 && (
-                <div className={`w-24 h-1 ${step > s ? 'bg-blue-600' : 'bg-gray-200'}`} />
-              )}
-            </React.Fragment>
-          ))}
-        </div>
-        <div className="flex justify-between mt-3 text-sm font-600">
-          <span className={step >= 1 ? 'text-blue-600' : 'text-gray-600'}>Guest</span>
-          <span className={step >= 2 ? 'text-blue-600' : 'text-gray-600'}>Details</span>
-          <span className={step >= 3 ? 'text-blue-600' : 'text-gray-600'}>Confirm</span>
-        </div>
-      </div>
-
       {/* Step 1: Guest Selection/Creation */}
       {step === 1 && (
-        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-          <h3 className="text-xl font-700 text-gray-900 mb-6">Select or Create Guest</h3>
-
-          {/* Mode Toggle */}
-          <div className="flex gap-2 mb-6">
-            <button
-              onClick={() => setGuestMode('search')}
-              className={`flex-1 px-4 py-2.5 rounded-lg font-600 transition-colors ${
-                guestMode === 'search'
-                  ? 'bg-blue-50 text-blue-700 border-2 border-blue-600'
-                  : 'bg-gray-50 text-gray-600 border-2 border-transparent hover:bg-gray-100'
-              }`}
-            >
-              <MagnifyingGlassIcon className="w-5 h-5 inline mr-2" />
-              Search Existing
-            </button>
-            <button
-              onClick={() => setGuestMode('create')}
-              className={`flex-1 px-4 py-2.5 rounded-lg font-600 transition-colors ${
-                guestMode === 'create'
-                  ? 'bg-blue-50 text-blue-700 border-2 border-blue-600'
-                  : 'bg-gray-50 text-gray-600 border-2 border-transparent hover:bg-gray-100'
-              }`}
-            >
-              <UserPlusIcon className="w-5 h-5 inline mr-2" />
-              Create New
-            </button>
-          </div>
-
-          {guestMode === 'search' ? (
-            <div>
-              {/* Search Input */}
-              <div className="relative mb-4">
-                <MagnifyingGlassIcon className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 pointer-events-none" />
-                <input
-                  type="text"
-                  placeholder="Search by name, email, or NIC..."
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  className="w-full pl-10 pr-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-1 focus:ring-blue-500"
-                />
+        <div className="grid grid-cols-1 gap-4 h-full">
+          {/* Guest Management Box */}
+          <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-5 flex flex-col">
+            <div className="space-y-4 flex-1 flex flex-col">
+              {/* Mode Toggle */}
+              <div className="flex gap-2">
+                <button
+                  onClick={() => setGuestMode('search')}
+                  className={`flex-1 px-3 py-2 rounded-lg text-xs font-600 transition-colors ${
+                    guestMode === 'search'
+                      ? 'bg-blue-600 text-white'
+                      : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                  }`}
+                >
+                  Search
+                </button>
+                <button
+                  onClick={() => setGuestMode('create')}
+                  className={`flex-1 px-3 py-2 rounded-lg text-xs font-600 transition-colors ${
+                    guestMode === 'create'
+                      ? 'bg-blue-600 text-white'
+                      : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                  }`}
+                >
+                  New Guest
+                </button>
               </div>
 
-              {/* Guest List */}
-              {loading ? (
-                <div className="flex justify-center py-8">
-                  <Spinner text="Loading guests..." />
-                </div>
-              ) : (
-                <div className="max-h-96 overflow-y-auto space-y-2">
-                  {filteredGuests.map((guest) => (
-                    <div
-                      key={guest.guest_id}
-                      onClick={() => handleGuestSelect(guest)}
-                      className={`p-4 border-2 rounded-lg cursor-pointer transition-all ${
-                        selectedGuest?.guest_id === guest.guest_id
-                          ? 'border-blue-600 bg-blue-50'
-                          : 'border-gray-200 hover:border-gray-300 bg-white'
-                      }`}
-                    >
-                      <div className="flex justify-between items-start">
-                        <div>
-                          <p className="font-700 text-gray-900">{guest.guest_name}</p>
-                          <p className="text-sm text-gray-600">{guest.email}</p>
-                          {guest.phone && <p className="text-sm text-gray-500">{guest.phone}</p>}
-                        </div>
-                        <div className="text-right">
-                          <span className="text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded-lg">
-                            {guest.booking_count} bookings
-                          </span>
-                        </div>
-                      </div>
+              {guestMode === 'search' ? (
+                <div className="flex-1 flex flex-col">
+                  <label className="block text-xs font-600 text-gray-700 mb-2">Search</label>
+                  <input
+                    type="text"
+                    placeholder="Name, email, or NIC..."
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-1 focus:ring-blue-500 mb-4"
+                  />
+                  
+                  {loading ? (
+                    <div className="flex justify-center py-12 flex-1">
+                      <Spinner text="Loading guests..." />
                     </div>
-                  ))}
-                  {filteredGuests.length === 0 && (
-                    <p className="text-center text-gray-500 py-8">No guests found</p>
+                  ) : (
+                    <div className="flex-1 flex flex-col min-h-0">
+                      <h3 className="text-sm font-700 text-gray-900 mb-3">Available Guests</h3>
+                      <div className="max-h-64 overflow-y-auto space-y-2 flex-1">
+                        {filteredGuests.map((guest) => (
+                          <button
+                            key={guest.guest_id}
+                            onClick={() => handleGuestSelect(guest)}
+                            className={`w-full text-left p-3 border-2 rounded-lg transition-all ${
+                              selectedGuest?.guest_id === guest.guest_id
+                                ? 'border-blue-600 bg-blue-50'
+                                : 'border-gray-200 hover:border-gray-300 bg-white'
+                            }`}
+                          >
+                            <div className="flex justify-between items-start">
+                              <div>
+                                <p className="font-600 text-gray-900 text-sm">{guest.guest_name}</p>
+                                <p className="text-xs text-gray-600">{guest.email}</p>
+                                {guest.phone && <p className="text-xs text-gray-500">{guest.phone}</p>}
+                              </div>
+                              <span className="text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded">
+                                {guest.booking_count} bookings
+                              </span>
+                            </div>
+                          </button>
+                        ))}
+                        {filteredGuests.length === 0 && (
+                          <p className="text-center text-gray-500 py-8 text-sm">No guests found</p>
+                        )}
+                      </div>
+
+                      {selectedGuest && (
+                        <button
+                          onClick={() => setStep(2)}
+                          className="w-full mt-4 px-4 py-2.5 bg-blue-600 text-white text-sm font-600 rounded-lg hover:bg-blue-700"
+                        >
+                          Continue with {selectedGuest.guest_name}
+                        </button>
+                      )}
+                    </div>
                   )}
                 </div>
+              ) : (
+                <div className="space-y-3">
+                  <FormInput
+                    label="Name"
+                    name="name"
+                    value={newGuestData.name}
+                    onChange={handleNewGuestChange}
+                    required
+                    placeholder="Full name"
+                  />
+                  <FormInput
+                    label="Email"
+                    name="email"
+                    type="email"
+                    value={newGuestData.email}
+                    onChange={handleNewGuestChange}
+                    required
+                    placeholder="Email"
+                  />
+                  <FormInput
+                    label="Phone"
+                    name="phone"
+                    value={newGuestData.phone}
+                    onChange={handleNewGuestChange}
+                    placeholder="Phone"
+                  />
+                  <div className="grid grid-cols-2 gap-2">
+                    <FormInput
+                      label="NIC"
+                      name="nic"
+                      value={newGuestData.nic}
+                      onChange={handleNewGuestChange}
+                      placeholder="NIC"
+                    />
+                    <FormInput
+                      label="Passport"
+                      name="passport"
+                      value={newGuestData.passport}
+                      onChange={handleNewGuestChange}
+                      placeholder="Passport"
+                    />
+                  </div>
+                  <button
+                    onClick={handleCreateGuest}
+                    disabled={loading}
+                    className="w-full px-3 py-2 bg-blue-600 text-white text-xs font-600 rounded-lg hover:bg-blue-700 disabled:opacity-50"
+                  >
+                    {loading ? 'Creating...' : 'Create Guest'}
+                  </button>
+                </div>
               )}
-
-              <div className="flex justify-end mt-6">
-                <Button
-                  onClick={() => setStep(2)}
-                  disabled={!selectedGuest}
-                  variant="primary"
-                >
-                  Continue
-                </Button>
-              </div>
             </div>
-          ) : (
-            <div className="space-y-4">
-              <FormInput
-                label="Full Name *"
-                name="name"
-                value={newGuestData.name}
-                onChange={handleNewGuestChange}
-                required
-                placeholder="Enter guest name"
-              />
-              <FormInput
-                label="Email *"
-                name="email"
-                type="email"
-                value={newGuestData.email}
-                onChange={handleNewGuestChange}
-                required
-                placeholder="guest@example.com"
-              />
-              <FormInput
-                label="Phone"
-                name="phone"
-                value={newGuestData.phone}
-                onChange={handleNewGuestChange}
-                placeholder="+1234567890"
-              />
-              <div className="grid grid-cols-2 gap-4">
-                <FormInput
-                  label="NIC"
-                  name="nic"
-                  value={newGuestData.nic}
-                  onChange={handleNewGuestChange}
-                  placeholder="National ID"
-                />
-                <FormInput
-                  label="Passport"
-                  name="passport"
-                  value={newGuestData.passport}
-                  onChange={handleNewGuestChange}
-                  placeholder="Passport Number"
-                />
-              </div>
-
-              <div className="flex justify-end gap-3 mt-6">
-                <Button
-                  onClick={handleCreateGuest}
-                  disabled={loading}
-                  variant="primary"
-                >
-                  {loading ? 'Creating...' : 'Create & Continue'}
-                </Button>
-              </div>
-            </div>
-          )}
+          </div>
         </div>
       )}
 
       {/* Step 2: Reservation Details */}
       {step === 2 && (
-        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-          <h3 className="text-xl font-700 text-gray-900 mb-6">Reservation Details</h3>
-
-          {/* Selected Guest Info */}
-          <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
-            <p className="text-sm text-blue-700 font-600 mb-1">Guest</p>
-            <p className="text-lg font-700 text-blue-900">{selectedGuest?.guest_name}</p>
-            <p className="text-sm text-blue-600">{selectedGuest?.email}</p>
+        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-5">
+          <div className="flex items-center gap-3 mb-6 pb-4 border-b border-gray-200">
+            <div className="w-12 h-12 rounded-full bg-blue-100 flex items-center justify-center">
+              <span className="text-lg font-700 text-blue-600">{selectedGuest?.guest_name.charAt(0)}</span>
+            </div>
+            <div>
+              <h3 className="text-lg font-700 text-gray-900">{selectedGuest?.guest_name}</h3>
+              <p className="text-sm text-gray-600">{selectedGuest?.email}</p>
+            </div>
           </div>
 
-          <div className="space-y-5">
+          <div className="space-y-4">
             {/* Room Type */}
             <div>
               <label className="block text-sm font-600 text-gray-700 mb-2">
@@ -401,7 +373,7 @@ const ReservationForm = ({ setView }) => {
                 value={formData.typeId}
                 onChange={handleReservationChange}
                 required
-                className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-1 focus:ring-blue-500"
+                className="w-full px-4 py-2.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-1 focus:ring-blue-500"
               >
                 <option value="">Select room type...</option>
                 {roomTypes.map((type) => (
@@ -415,7 +387,7 @@ const ReservationForm = ({ setView }) => {
             {/* Dates */}
             <div className="grid grid-cols-2 gap-4">
               <FormInput
-                label="Check-in Date *"
+                label="Check-in *"
                 name="checkinDate"
                 type="date"
                 value={formData.checkinDate}
@@ -424,7 +396,7 @@ const ReservationForm = ({ setView }) => {
                 error={errors.checkinDate}
               />
               <FormInput
-                label="Check-out Date *"
+                label="Check-out *"
                 name="checkoutDate"
                 type="date"
                 value={formData.checkoutDate}
@@ -433,30 +405,14 @@ const ReservationForm = ({ setView }) => {
                 error={errors.checkoutDate}
               />
             </div>
-
-            {/* Status */}
-            <div>
-              <label className="block text-sm font-600 text-gray-700 mb-2">
-                Status
-              </label>
-              <select
-                name="status"
-                value={formData.status}
-                onChange={handleReservationChange}
-                className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-1 focus:ring-blue-500"
-              >
-                <option value="confirmed">Confirmed</option>
-              </select>
-            </div>
           </div>
 
-          <div className="flex justify-between mt-6">
+          <div className="flex justify-between gap-3 mt-6 pt-4 border-t border-gray-200">
             <Button onClick={() => setStep(1)} variant="secondary">
-              <ArrowLeftIcon className="w-4 h-4 inline mr-2" />
               Back
             </Button>
             <Button onClick={() => setStep(3)} variant="primary">
-              Continue
+              Review
             </Button>
           </div>
         </div>
@@ -464,30 +420,25 @@ const ReservationForm = ({ setView }) => {
 
       {/* Step 3: Confirmation */}
       {step === 3 && (
-        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-          <h3 className="text-xl font-700 text-gray-900 mb-6">Confirm Reservation</h3>
+        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-5">
+          <h3 className="text-lg font-700 text-gray-900 mb-6">Review Reservation</h3>
 
-          <div className="space-y-4">
-            {/* Guest Info */}
-            <div className="bg-gray-50 rounded-lg p-4">
-              <p className="text-sm text-gray-600 mb-2 flex items-center gap-2">
-                <UserPlusIcon className="w-4 h-4" />
-                Guest Information
-              </p>
-              <p className="font-700 text-gray-900">{selectedGuest?.guest_name}</p>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+            {/* Guest Card */}
+            <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+              <p className="text-xs text-blue-700 font-600 mb-2">Guest</p>
+              <p className="text-lg font-700 text-gray-900">{selectedGuest?.guest_name}</p>
               <p className="text-sm text-gray-600">{selectedGuest?.email}</p>
+              {selectedGuest?.phone && <p className="text-sm text-gray-600">{selectedGuest.phone}</p>}
             </div>
 
-            {/* Reservation Info */}
-            <div className="bg-gray-50 rounded-lg p-4">
-              <p className="text-sm text-gray-600 mb-2 flex items-center gap-2">
-                <HomeIcon className="w-4 h-4" />
-                Room & Dates
+            {/* Reservation Card */}
+            <div className="bg-green-50 border border-green-200 rounded-lg p-4">
+              <p className="text-xs text-green-700 font-600 mb-2">Room Details</p>
+              <p className="text-lg font-700 text-gray-900">
+                {roomTypes.find(t => t.type_id === parseInt(formData.typeId))?.name}
               </p>
-              <p className="font-700 text-gray-900">
-                {roomTypes.find(t => t.id === parseInt(formData.typeId))?.name}
-              </p>
-              <div className="grid grid-cols-2 gap-4 mt-2 text-sm">
+              <div className="grid grid-cols-2 gap-2 mt-2 text-sm">
                 <div>
                   <p className="text-gray-600">Check-in</p>
                   <p className="font-600 text-gray-900">{formData.checkinDate}</p>
@@ -498,28 +449,14 @@ const ReservationForm = ({ setView }) => {
                 </div>
               </div>
             </div>
-
-            {/* Staff Info */}
-            <div className="bg-gray-50 rounded-lg p-4">
-              <p className="text-sm text-gray-600 mb-2">Created by</p>
-              <p className="font-600 text-gray-900">{staff?.userName}</p>
-            </div>
           </div>
 
-          <div className="flex justify-between mt-6">
+          <div className="flex justify-between gap-3 pt-4 border-t border-gray-200">
             <Button onClick={() => setStep(2)} variant="secondary" disabled={submitting}>
-              <ArrowLeftIcon className="w-4 h-4 inline mr-2" />
               Back
             </Button>
             <Button onClick={handleSubmit} variant="success" disabled={submitting}>
-              {submitting ? (
-                'Creating...'
-              ) : (
-                <>
-                  <CheckCircleIcon className="w-5 h-5 inline mr-2" />
-                  Confirm Reservation
-                </>
-              )}
+              {submitting ? 'Creating...' : 'Create Reservation'}
             </Button>
           </div>
         </div>

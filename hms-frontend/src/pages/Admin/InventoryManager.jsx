@@ -195,19 +195,17 @@ const InventoryManager = () => {
     {
       key: 'itemid',
       label: 'ID',
-      width: '80px',
+      width: '60px',
       render: (value) => <span className="font-mono text-gray-600">#{value}</span>
     },
     {
       key: 'item_name',
       label: 'Item Name',
-      width: '300px',
-      render: (value) => <span className="font-600 text-gray-900">{value}</span>
+      render: (value) => <span className="font-600 text-gray-900 block truncate">{value}</span>
     },
     {
       key: 'price',
       label: 'Price',
-      width: '150px',
       render: (value) => <span className="text-gray-900 font-700">${value}</span>
     }
   ];
@@ -216,25 +214,22 @@ const InventoryManager = () => {
     {
       key: 'room_id',
       label: 'ID',
-      width: '80px',
+      width: '60px',
       render: (value) => <span className="font-mono text-gray-600">#{value}</span>
     },
     {
       key: 'room_number',
       label: 'Room Number',
-      width: '150px',
-      render: (value) => <span className="font-700 text-gray-900">{value}</span>
+      render: (value) => <span className="font-700 text-gray-900 block truncate">{value}</span>
     },
     {
       key: 'type_name',
       label: 'Type',
-      width: '200px',
-      render: (value) => <span className="text-gray-700">{value}</span>
+      render: (value) => <span className="text-gray-700 block truncate">{value}</span>
     },
     {
       key: 'current_status',
       label: 'Status',
-      width: '150px',
       render: (value) => {
         const statusConfig = {
           clean: { bg: 'bg-green-50', text: 'text-green-700' },

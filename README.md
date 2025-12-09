@@ -1,166 +1,130 @@
-# Hotel Management System - Setup & Usage Guide
+# Hotel Management System
+**IBA Karachi - Database Course Project**  
+**Instructor:** Ms. Abeera Tariq
 
-## 🎨 Recent Updates
+---
 
-### ✅ Completed Features
-1. **Authentication System** - Staff login with protected routes
-2. **Apple-Style UI** - Clean, modern design with Heroicons
-3. **Complete Reservation Details** - View all guest info, charges, and payments
-4. **Guest Management** - Create new guests or select existing ones during booking
-5. **Proper Scrolling** - All views have overflow handling
-6. **Improved Typography** - Inter font with better spacing
+## What is this?
 
-## 📋 Prerequisites
+A simple hotel booking and management system built for learning databases. Staff can log in, create bookings, check guests in/out, manage rates, and handle inventory. It's a thin backend + React frontend combo that talks to PostgreSQL/Supabase.
 
-- Node.js (v14 or higher)
-# Hotel Management System - Setup & Usage Guide
+---
 
-This repository contains a thin Node.js backend, a Vite + React frontend, and SQL scripts for the PostgreSQL/Supabase database used by the application.
+## Tech Stack
 
-Overview:
-- `hms-backend/` - Express server that exposes a thin API and depends on PostgreSQL functions
-- `hms-frontend/` - Vite + React frontend (Tailwind CSS, Heroicons)
-- SQL files at repository root - schema, triggers and PL/pgSQL functions (including `supabase-auth.sql`)
-- `start_hotel` - convenience Bash script to install deps and launch backend + frontend (requires a POSIX shell)
+**Backend:** Node.js + Express (thin API layer)  
+**Frontend:** React + Vite + Tailwind CSS  
+**Database:** PostgreSQL (Hosted on Supabase)
 
-----
+---
 
-## Summary: can I run `./start_hotel` on a fresh Windows, macOS, or Linux PC and it will do everything?
+## How to Run
 
-Short answer: **yes!** The new `start_hotel` script (and `start_hotel.bat` on Windows) is cross-platform and will:
-- Automatically install Node dependencies if missing
-- Check for the `DATABASE_URL` environment variable and provide clear instructions if it is missing
-- Start both backend and frontend services
-- Display live logs from both
-- Stop cleanly when you press Ctrl+C
+### Setup First Time
+Make sure you have:
+- A PostgreSQL database (or Supabase project)
+- A `.env` file in `hms-backend/` with:
+  ```
+  DATABASE_URL="postgresql://postgres.jjywqnqmddzoacvngypm:Database123.@aws-1-ap-southeast-2.pooler.supabase.com:5432/postgres"
+  PORT=4000
+  ```
 
-What you need for a successful fresh install:
-- Node.js and npm installed (recommended Node 16 or 18+)
-- A running PostgreSQL instance (or Supabase) with the database schema/functions applied
-- A `DATABASE_URL` environment variable or a `.env` file in `hms-backend/` pointing to your database
+### Run the Project
 
-Once those are ready, you can simply run:
-- macOS/Linux: `./start_hotel`
-- Windows: `start_hotel.bat` or `./start_hotel` (if using Git Bash / WSL)
-
-----
-
-## Prerequisites
-
-- Node.js (recommended 16 or 18+), npm
-- PostgreSQL (or a Supabase project)
-- Git (to clone the repo)
-- A POSIX shell to run `start_hotel` (macOS, Linux, or Windows WSL / Git Bash)
-
-----
-
-## Database setup
-
-1. If you are using Supabase, open the SQL editor and run the SQL files in this repository as appropriate. At minimum run the schema and functions that your deployment needs:
-   - `supabase-tables.sql` (create tables)
-   - `supabase-plsql.sql` (PL/pgSQL helper functions)
-   - `supabase-crud.sql` (CRUD helpers)
-   - `supabase-triggers.sql` (triggers)
-   - `supabase-auth.sql` (authentication functions used by the backend)
-
-2. If using a local PostgreSQL instance, run the same SQL files against your database.
-
-3. Create a `DATABASE_URL` for the backend. Example format:
-
-```
-postgres://<db_user>:<db_password>@<db_host>:5432/<db_name>
-```
-
-Place this into a `.env` file inside `hms-backend/` (the backend uses `dotenv`). Example `hms-backend/.env`:
-
-```
-DATABASE_URL=postgres://postgres:password@localhost:5432/postgres
-PORT=4000
-```
-
-Note: `hms-backend/db.js` will throw and exit if `DATABASE_URL` is not set.
-
-----
-
-## Running the project
-
-Recommended approach (all platforms: macOS, Linux, Windows):
-
+**Mac/Linux:**
 ```bash
 ./start_hotel
 ```
 
-On Windows, you can also use:
-
+**Windows:**
 ```cmd
 start_hotel.bat
 ```
 
-The script will:
-- Check for `DATABASE_URL` and exit with a clear message if it is not set
-- Run `npm install` in `hms-backend` and `hms-frontend` if `node_modules` are missing
-- Start the backend (Node) on port `4000`
-- Start the frontend (Vite) on port `5173`
-- Display live logs from both services
-- Stop both services cleanly when you press Ctrl+C
+That's it! The `start_hotel` script will automatically:
+- ✓ Check if Node.js is installed
+- ✓ Verify DATABASE_URL is set
+- ✓ Run `npm install` in both folders (if `node_modules` are missing)
+- ✓ Start backend (Node/Express) on port `4000`
+- ✓ Start frontend (Vite) on port `5173`
+- ✓ Display live logs from both services
+- ✓ Stop both cleanly when you press `Ctrl+C`
 
-Important: the backend requires `DATABASE_URL` to be set in `hms-backend/.env`. If it is missing, the script will exit with a clear error message and instructions.
+Open **http://localhost:5173** in your browser once it's running.
 
-If you prefer to start services manually:
+---
 
-1. Install dependencies:
+## Architecture
 
-```bash
-cd hms-backend
-npm install
+The project uses a **"thin backend"** approach:
+- Backend is just an Express API that mostly passes requests to PostgreSQL functions
+- Most business logic lives in the database (PL/pgSQL functions)
+- Frontend is a React SPA that talks to the API
 
-cd ../hms-frontend
-npm install
+```
+Frontend (React) → Backend API (Express) → Database (PL/pgSQL functions)
 ```
 
-2. Start the backend (in one terminal):
+**Backend routes:**
+- `/api/auth` - staff login
+- `/api/reservations` - bookings
+- `/api/read` - fetching data
+- `/api/admin` - inventory & rate plans
 
-Windows (PowerShell):
-```powershell
-cd hms-backend
-node server.js
+---
+
+## Database Schema & Functions
+
+We have 7 core tables:
+- `staff` - user accounts
+- `guest` - hotel guests
+- `room_type` - room categories
+- `room` - individual rooms
+- `rate_plan` - pricing by date
+- `reservation` - bookings
+- `service_item` - add-on services
+
+**SQL files to load (in order):**
+1. `supabase-tables.sql` - creates all tables
+2. `supabase-plsql.sql` - helper functions
+3. `supabase-crud.sql` - insert/update/delete functions
+4. `supabase-triggers.sql` - auto-updates
+5. `supabase-auth.sql` - staff authentication
+6. `supabase-rateplan.sql` - rate management
+
+All the heavy lifting happens in the database. The backend just calls these functions.
+
+---
+
+## Features
+
+✓ Staff login & authentication  
+✓ Create/manage reservations  
+✓ Check-in & check-out guests  
+✓ View reservation details (charges, payments, guest info)  
+✓ Manage room inventory  
+✓ Set rate plans by date  
+✓ Add services to bookings
+
+---
+
+## Project Structure
+
 ```
+hms-backend/
+  ├── server.js          # Express app
+  ├── db.js              # DB connection
+  ├── routes/            # API endpoints
+  └── package.json
 
-Linux/macOS or WSL:
-```bash
-cd hms-backend
-node server.js
+hms-frontend/
+  ├── src/
+  │   ├── pages/         # Login, Dashboard, Booking, Admin
+  │   ├── components/    # UI components
+  │   ├── context/       # Auth state
+  │   └── api/           # API calls
+  └── package.json
+
+SQL Functions/
+  └── supabase-*.sql     # Database schema & functions (only for ref, original copy in Supabase)
 ```
-
-3. Start the frontend (in another terminal):
-
-```bash
-cd hms-frontend
-npm run dev
-```
-
-4. Visit: `http://localhost:5173`
-
-----
-
-## Development notes
-
-- Backend port: `4000` (configurable via `hms-backend/.env`)
-- Frontend port: `5173` (Vite default)
-- The start script will tell you if ports are already in use
-- Ctrl+C will cleanly shut down both services
-
-Troubleshooting tips:
-- If the script says "DATABASE_URL not set", create `hms-backend/.env` with the correct `DATABASE_URL`.
-- If a port is already in use, stop the process using that port or change the port in the `.env` file.
-
-----
-
-## Project structure (high level)
-
-- `hms-backend/` — Express server, routes, connects to PostgreSQL
-- `hms-frontend/` — React + Tailwind frontend
-- SQL files (root) — schema, triggers and PL/pgSQL functions
-- `start_hotel` — Bash wrapper script (calls `start_hotel.js`)
-- `start_hotel.bat` — Windows batch file wrapper (calls `start_hotel.js`)
-- `start_hotel.js` — Cross-platform Node.js script that handles platform-specific logic and starts services

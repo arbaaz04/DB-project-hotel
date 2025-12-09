@@ -136,13 +136,13 @@ const RatePlanManager = () => {
     {
       key: 'rate_plan_id',
       label: 'ID',
-      width: '80px',
+      width: '60px',
       render: (value) => <span className="font-mono text-gray-600">#{value}</span>
     },
     {
       key: 'type_name',
       label: 'Room Type',
-      width: '200px',
+      width: '140px',
       render: (value) => (
         <div className="flex items-center gap-2">
           <BuildingOffice2Icon className="w-4 h-4 text-gray-400" />
@@ -153,13 +153,12 @@ const RatePlanManager = () => {
     {
       key: 'plan_name',
       label: 'Plan Name',
-      width: '250px',
-      render: (value) => <span className="text-gray-900">{value}</span>
+      render: (value) => <span className="text-gray-900 block truncate">{value}</span>
     },
     {
       key: 'daily_rate',
       label: 'Daily Rate',
-      width: '150px',
+      width: '130px',
       render: (value) => (
         <div className="flex items-center gap-1">
           <CurrencyDollarIcon className="w-4 h-4 text-green-600" />
@@ -170,7 +169,7 @@ const RatePlanManager = () => {
     {
       key: 'start_date',
       label: 'Start Date',
-      width: '150px',
+      width: '130px',
       render: (value) => (
         <div className="flex items-center gap-1 text-sm">
           <CalendarIcon className="w-4 h-4 text-gray-400" />
@@ -181,7 +180,7 @@ const RatePlanManager = () => {
     {
       key: 'end_date',
       label: 'End Date',
-      width: '150px',
+      width: '130px',
       render: (value) => {
         const isExpired = new Date(value) < new Date();
         return (

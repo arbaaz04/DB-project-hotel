@@ -3,6 +3,11 @@
 const { spawn } = require('child_process');
 const path = require('path');
 const fs = require('fs');
+const { execSync } = require('child_process');
+
+// Suppress deprecation warnings
+process.noDeprecation = true;
+process.env.NODE_NO_DEPRECATION = '1';
 
 const PROJECT_ROOT = __dirname;
 const BACKEND_DIR = path.join(PROJECT_ROOT, 'hms-backend');
@@ -12,6 +17,16 @@ const FRONTEND_PORT = 5173;
 let backendProcess = null;
 let frontendProcess = null;
 let isShuttingDown = false;
+
+function checkNodeInstalled() {
+  try {
+    execSync('node --version', { encoding: 'utf-8' }).trim();
+  } catch (err) {
+    console.error('Error: Node.js is not installed');
+    console.error('Please download and install Node.js from https://nodejs.org/');
+    process.exit(1);
+  }
+}
 
 function checkDatabaseUrl() {
   const envPath = path.join(BACKEND_DIR, '.env');
@@ -142,6 +157,7 @@ function startFrontend() {
       cwd: FRONTEND_DIR,
       stdio: 'ignore',
       shell: true,
+      env: { ...process.env, NODE_NO_DEPRECATION: '1' },
     });
 
     setTimeout(() => resolve(), 2000);
@@ -209,11 +225,12 @@ process.on('SIGTERM', async () => {
 
 async function main() {
   try {
+    checkNodeInstalled();
     checkDatabaseUrl();
     await installDependencies();
     await Promise.all([startBackend(), startFrontend()]);
-    console.log(`\nHotel Management System is running at http://localhost:${FRONTEND_PORT}`);
-    console.log('Press Ctrl+C to stop\n');
+    console.log(`\nHotel Management System running at http://localhost:${FRONTEND_PORT}`);
+    console.log('\nPress Ctrl+C to stop\n');
   } catch (error) {
     console.error('Error:', error.message);
     await shutdown();

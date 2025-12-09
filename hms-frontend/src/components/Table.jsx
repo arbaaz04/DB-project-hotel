@@ -7,15 +7,15 @@ export const Table = ({
   actions 
 }) => {
   return (
-    <div className="overflow-x-auto">
-      <table className="w-full text-sm">
+    <div className="overflow-x-auto w-full">
+      <table className="w-full text-sm border-collapse" style={{ tableLayout: 'fixed' }}>
         <thead className="bg-gray-50 border-b border-gray-200">
           <tr>
             {columns.map((col) => (
               <th 
                 key={col.key}
                 className="px-6 py-3.5 text-left text-xs font-600 text-gray-700 uppercase tracking-wider"
-                style={{ width: col.width }}
+                style={{ width: col.width || 'auto' }}
               >
                 {col.label}
               </th>

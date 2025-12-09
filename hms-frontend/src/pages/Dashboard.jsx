@@ -29,6 +29,20 @@ import {
 } from '@heroicons/react/24/outline';
 
 const Dashboard = ({ setView }) => {
+  // Helper function to format dates as DD/MMM/YY
+  const formatDate = (dateString) => {
+    if (!dateString) return 'N/A';
+    try {
+      const date = new Date(dateString);
+      const day = String(date.getDate()).padStart(2, '0');
+      const month = String(date.getMonth() + 1).padStart(2, '0');
+      const year = String(date.getFullYear()).slice(-2);
+      return `${day}/${month}/${year}`;
+    } catch (e) {
+      return dateString;
+    }
+  };
+
   const [reservations, setReservations] = useState([]);
   const [filteredReservations, setFilteredReservations] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -193,31 +207,27 @@ const Dashboard = ({ setView }) => {
     { 
       key: 'reservation_id', 
       label: 'ID', 
-      width: '80px',
+      width: '60px',
       render: (value) => <span className="font-mono text-gray-600 font-600">#{value}</span>
     },
     { 
       key: 'guest_name', 
       label: 'Guest Name', 
-      width: '180px',
-      render: (value) => <span className="font-600 text-gray-900">{value || 'N/A'}</span>
+      render: (value) => <span className="font-600 text-gray-900 block truncate">{value || 'N/A'}</span>
     },
     { 
       key: 'check_in', 
-      label: 'Check-in', 
-      width: '120px',
-      render: (value) => <span className="text-sm text-gray-600">{value}</span>
+      label: 'Scheduled Check-in', 
+      render: (value) => <span className="text-sm text-gray-600">{formatDate(value)}</span>
     },
     { 
       key: 'check_out', 
-      label: 'Check-out', 
-      width: '120px',
-      render: (value) => <span className="text-sm text-gray-600">{value}</span>
+      label: 'Scheduled Check-out', 
+      render: (value) => <span className="text-sm text-gray-600">{formatDate(value)}</span>
     },
     { 
       key: 'room_number', 
       label: 'Room', 
-      width: '100px',
       render: (value) => value ? 
         <span className="inline-flex items-center px-2.5 py-0.5 rounded-lg bg-blue-50 text-blue-700 text-sm font-600">{value}</span> : 
         <span className="text-gray-400 text-sm">Unassigned</span>
@@ -225,7 +235,6 @@ const Dashboard = ({ setView }) => {
     { 
       key: 'current_status', 
       label: 'Status', 
-      width: '120px',
       render: (value) => {
         const statusConfig = {
           confirmed: { bg: 'bg-blue-50', text: 'text-blue-700', label: 'Confirmed' },
@@ -281,7 +290,7 @@ const Dashboard = ({ setView }) => {
   }
 
   return (
-    <div className="h-full flex flex-col space-y-6">
+    <div className="h-full flex flex-col space-y-4 pb-6\">
       {alert && (
         <Alert
           type={alert.type}
@@ -292,7 +301,7 @@ const Dashboard = ({ setView }) => {
       )}
 
       {/* Stats Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 shrink-0">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 shrink-0 w-full">
         {stats.map((stat, idx) => {
           const Icon = stat.icon;
           const colorClasses = {
@@ -302,14 +311,14 @@ const Dashboard = ({ setView }) => {
             red: 'bg-red-50 text-red-600'
           };
           return (
-            <div key={idx} className="bg-white rounded-xl shadow-sm border border-gray-200 p-5">
+            <div key={idx} className="bg-white rounded-lg shadow-sm border border-gray-200 p-3">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm font-600 text-gray-600">{stat.label}</p>
-                  <p className="text-3xl font-700 text-gray-900 mt-2">{stat.value}</p>
+                  <p className="text-xs font-600 text-gray-600">{stat.label}</p>
+                  <p className="text-2xl font-700 text-gray-900 mt-1">{stat.value}</p>
                 </div>
-                <div className={`p-3 rounded-lg ${colorClasses[stat.color]}`}>
-                  <Icon className="w-6 h-6" />
+                <div className={`p-2 rounded-lg ${colorClasses[stat.color]}`}>
+                  <Icon className="w-5 h-5" />
                 </div>
               </div>
             </div>
@@ -328,23 +337,21 @@ const Dashboard = ({ setView }) => {
         {/* Filters */}
         <div className="px-6 py-4 bg-gray-50 border-b border-gray-100">
           <div className="flex flex-col sm:flex-row gap-3">
-            <div className="flex-1 relative">
-              <MagnifyingGlassIcon className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 pointer-events-none" />
+            <div className="flex-1">
               <input
                 type="text"
                 placeholder="Search by guest name, room, or ID..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-1 focus:ring-blue-600 focus:border-transparent"
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-1 focus:ring-blue-600 focus:border-transparent"
               />
             </div>
             
-            <div className="relative w-full sm:w-48">
-              <FunnelIcon className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 pointer-events-none" />
+            <div className="w-full sm:w-48">
               <select
                 value={statusFilter}
                 onChange={(e) => setStatusFilter(e.target.value)}
-                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-1 focus:ring-blue-600 appearance-none bg-white"
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-1 focus:ring-blue-600 appearance-none bg-white"
               >
                 <option value="all">All Statuses</option>
                 <option value="confirmed">Confirmed</option>
@@ -531,50 +538,40 @@ const Dashboard = ({ setView }) => {
           </div>
         ) : reservationDetails ? (
           <div className="space-y-6">
-            {/* Summary */}
-            <div className="grid grid-cols-2 gap-4">"
-              <div className="bg-gray-50 rounded-lg p-4">
-                <div className="flex items-center gap-2 text-gray-600 mb-2">
+            {/* Top: Guest and Room Info Side by Side */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {/* Guest Card */}
+              <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                <div className="flex items-center gap-2 text-blue-700 mb-3">
                   <UserIcon className="w-5 h-5" />
-                  <span className="text-sm font-600">Guest Information</span>
+                  <span className="text-sm font-700">Guest Information</span>
                 </div>
                 <p className="text-lg font-700 text-gray-900">{reservationDetails.guest_name}</p>
-                <p className="text-sm text-gray-600">{reservationDetails.guest_email}</p>
-                <p className="text-sm text-gray-600">{reservationDetails.guest_phone}</p>
+                <p className="text-sm text-gray-600 mt-1">{reservationDetails.guest_email}</p>
+                {reservationDetails.guest_phone && (
+                  <p className="text-sm text-gray-600">{reservationDetails.guest_phone}</p>
+                )}
               </div>
 
-              <div className="bg-gray-50 rounded-lg p-4">
-                <div className="flex items-center gap-2 text-gray-600 mb-2">
+              {/* Room Card */}
+              <div className="bg-green-50 border border-green-200 rounded-lg p-4">
+                <div className="flex items-center gap-2 text-green-700 mb-3">
                   <BuildingOffice2Icon className="w-5 h-5" />
-                  <span className="text-sm font-600">Room Details</span>
+                  <span className="text-sm font-700">Room Details</span>
                 </div>
                 <p className="text-lg font-700 text-gray-900">
                   {reservationDetails.room_number || 'Not Assigned'}
                 </p>
-                <p className="text-sm text-gray-600">{reservationDetails.room_type}</p>
-              </div>
-            </div>
-
-            {/* Dates */}
-            <div className="bg-gray-50 rounded-lg p-4">
-              <div className="flex items-center gap-2 text-gray-600 mb-3">
-                <CalendarIcon className="w-5 h-5" />
-                <span className="text-sm font-600">Stay Information</span>
-              </div>
-              <div className="grid grid-cols-2 gap-4 text-sm">
-                <div>
-                  <p className="text-gray-600">Check-in</p>
-                  <p className="font-600 text-gray-900">{reservationDetails.checkin_date}</p>
-                  {reservationDetails.actual_checkin_date && (
-                    <p className="text-xs text-gray-500">Actual: {new Date(reservationDetails.actual_checkin_date).toLocaleString()}</p>
-                  )}
-                </div>
-                <div>
-                  <p className="text-gray-600">Check-out</p>
-                  <p className="font-600 text-gray-900">{reservationDetails.checkout_date}</p>
-                  {reservationDetails.actual_checkout_date && (
-                    <p className="text-xs text-gray-500">Actual: {new Date(reservationDetails.actual_checkout_date).toLocaleString()}</p>
-                  )}
+                <p className="text-sm text-gray-600 mt-1">{reservationDetails.room_type}</p>
+                <div className="grid grid-cols-2 gap-2 mt-3 text-xs">
+                  <div>
+                    <p className="text-gray-600">Check-in</p>
+                    <p className="font-600 text-gray-900">{formatDate(reservationDetails.checkin_date)}</p>
+                  </div>
+                  <div>
+                    <p className="text-gray-600">Check-out</p>
+                    <p className="font-600 text-gray-900">{formatDate(reservationDetails.checkout_date)}</p>
+                  </div>
                 </div>
               </div>
             </div>
@@ -583,7 +580,7 @@ const Dashboard = ({ setView }) => {
             <div className="bg-blue-50 rounded-lg p-4">
               <div className="flex items-center gap-2 text-blue-700 mb-3">
                 <CurrencyDollarIcon className="w-5 h-5" />
-                <span className="text-sm font-600">Financial Summary</span>
+                <span className="text-sm font-700">Financial Summary</span>
               </div>
               <div className="grid grid-cols-3 gap-4 text-sm">
                 <div>
@@ -601,58 +598,60 @@ const Dashboard = ({ setView }) => {
               </div>
             </div>
 
-            {/* Charges */}
-            {reservationCharges.length > 0 && (
-              <div>
-                <h4 className="text-sm font-700 text-gray-900 mb-3">Charges</h4>
-                <div className="border border-gray-200 rounded-lg overflow-hidden">
-                  <table className="min-w-full divide-y divide-gray-200">
-                    <thead className="bg-gray-50">
-                      <tr>
-                        <th className="px-4 py-3 text-left text-xs font-600 text-gray-600">Description</th>
-                        <th className="px-4 py-3 text-left text-xs font-600 text-gray-600">Type</th>
-                        <th className="px-4 py-3 text-left text-xs font-600 text-gray-600">Time</th>
-                        <th className="px-4 py-3 text-right text-xs font-600 text-gray-600">Amount</th>
-                      </tr>
-                    </thead>
-                    <tbody className="bg-white divide-y divide-gray-200">
-                      {reservationCharges.map((charge) => (
-                        <tr key={charge.transaction_id}>
-                          <td className="px-4 py-3 text-sm text-gray-900">{charge.charge_description}</td>
-                          <td className="px-4 py-3 text-sm text-gray-600">{charge.charge_type}</td>
-                          <td className="px-4 py-3 text-sm text-gray-600">
-                            {new Date(charge.charge_time).toLocaleString()}
-                          </td>
-                          <td className="px-4 py-3 text-sm text-gray-900 text-right font-600">
-                            ${charge.charge_amount}
-                          </td>
+            {/* Ledger - Charges and Payments */}
+            <div className="space-y-4">
+              {/* Charges Table */}
+              {reservationCharges.length > 0 && (
+                <div>
+                  <h4 className="text-sm font-700 text-gray-900 mb-3">Charges</h4>
+                  <div className="border border-gray-200 rounded-lg overflow-hidden">
+                    <table className="min-w-full divide-y divide-gray-200">
+                      <thead className="bg-gray-50">
+                        <tr>
+                          <th className="px-4 py-3 text-left text-xs font-600 text-gray-600">Description</th>
+                          <th className="px-4 py-3 text-left text-xs font-600 text-gray-600">Type</th>
+                          <th className="px-4 py-3 text-left text-xs font-600 text-gray-600">Date</th>
+                          <th className="px-4 py-3 text-right text-xs font-600 text-gray-600">Amount</th>
                         </tr>
-                      ))}
-                    </tbody>
-                  </table>
+                      </thead>
+                      <tbody className="bg-white divide-y divide-gray-200">
+                        {reservationCharges.map((charge) => (
+                          <tr key={charge.transaction_id}>
+                            <td className="px-4 py-3 text-sm text-gray-900">{charge.charge_description}</td>
+                            <td className="px-4 py-3 text-sm text-gray-600">{charge.charge_type}</td>
+                            <td className="px-4 py-3 text-sm text-gray-600">
+                              {formatDate(charge.charge_time)}
+                            </td>
+                            <td className="px-4 py-3 text-sm text-gray-900 text-right font-600">
+                              ${charge.charge_amount}
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
                 </div>
-              </div>
-            )}
+              )}
 
-            {/* Payments */}
-            {reservationPayments.length > 0 && (
-              <div>
-                <h4 className="text-sm font-700 text-gray-900 mb-3">Payments</h4>
-                <div className="border border-gray-200 rounded-lg overflow-hidden">
-                  <table className="min-w-full divide-y divide-gray-200">
-                    <thead className="bg-gray-50">
-                      <tr>
-                        <th className="px-4 py-3 text-left text-xs font-600 text-gray-600">Payment Type</th>
-                        <th className="px-4 py-3 text-left text-xs font-600 text-gray-600">Date</th>
-                        <th className="px-4 py-3 text-right text-xs font-600 text-gray-600">Amount</th>
-                      </tr>
-                    </thead>
-                    <tbody className="bg-white divide-y divide-gray-200">
-                      {reservationPayments.map((payment) => (
+              {/* Payments Table */}
+              {reservationPayments.length > 0 && (
+                <div>
+                  <h4 className="text-sm font-700 text-gray-900 mb-3">Payments</h4>
+                  <div className="border border-gray-200 rounded-lg overflow-hidden">
+                    <table className="min-w-full divide-y divide-gray-200">
+                      <thead className="bg-gray-50">
+                        <tr>
+                          <th className="px-4 py-3 text-left text-xs font-600 text-gray-600">Payment Type</th>
+                          <th className="px-4 py-3 text-left text-xs font-600 text-gray-600">Date</th>
+                          <th className="px-4 py-3 text-right text-xs font-600 text-gray-600">Amount</th>
+                        </tr>
+                      </thead>
+                      <tbody className="bg-white divide-y divide-gray-200">
+                        {reservationPayments.map((payment) => (
                         <tr key={payment.payment_id}>
                           <td className="px-4 py-3 text-sm text-gray-900">{payment.payment_type}</td>
                           <td className="px-4 py-3 text-sm text-gray-600">
-                            {new Date(payment.payment_date).toLocaleString()}
+                            {formatDate(payment.payment_date)}
                           </td>
                           <td className="px-4 py-3 text-sm text-green-600 text-right font-600">
                             ${payment.payment_amount}
@@ -664,6 +663,7 @@ const Dashboard = ({ setView }) => {
                 </div>
               </div>
             )}
+            </div>
 
             {/* Staff Info */}
             <div className="text-xs text-gray-500 pt-4 border-t border-gray-200">

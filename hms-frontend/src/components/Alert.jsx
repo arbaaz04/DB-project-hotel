@@ -15,32 +15,40 @@ export const Alert = ({
 }) => {
   const typeConfig = {
     success: {
-      bg: 'bg-green-50',
-      border: 'border-green-200',
-      text: 'text-green-900',
-      iconColor: 'text-green-600',
-      icon: CheckCircleIcon
+      bg: 'bg-emerald-50',
+      border: 'border-l-4 border-emerald-500',
+      title: 'text-emerald-900',
+      message: 'text-emerald-800',
+      iconColor: 'text-emerald-600',
+      icon: CheckCircleIcon,
+      closeColor: 'hover:text-emerald-600 text-emerald-500'
     },
     error: {
       bg: 'bg-red-50',
-      border: 'border-red-200',
-      text: 'text-red-900',
+      border: 'border-l-4 border-red-500',
+      title: 'text-red-900',
+      message: 'text-red-800',
       iconColor: 'text-red-600',
-      icon: XCircleIcon
+      icon: XCircleIcon,
+      closeColor: 'hover:text-red-600 text-red-500'
     },
     warning: {
       bg: 'bg-amber-50',
-      border: 'border-amber-200',
-      text: 'text-amber-900',
+      border: 'border-l-4 border-amber-500',
+      title: 'text-amber-900',
+      message: 'text-amber-800',
       iconColor: 'text-amber-600',
-      icon: ExclamationTriangleIcon
+      icon: ExclamationTriangleIcon,
+      closeColor: 'hover:text-amber-600 text-amber-500'
     },
     info: {
       bg: 'bg-blue-50',
-      border: 'border-blue-200',
-      text: 'text-blue-900',
+      border: 'border-l-4 border-blue-500',
+      title: 'text-blue-900',
+      message: 'text-blue-800',
       iconColor: 'text-blue-600',
-      icon: InformationCircleIcon
+      icon: InformationCircleIcon,
+      closeColor: 'hover:text-blue-600 text-blue-500'
     }
   };
 
@@ -48,18 +56,19 @@ export const Alert = ({
   const Icon = config.icon;
 
   return (
-    <div className={`border-l-4 ${config.border} ${config.bg} p-4 rounded-lg flex justify-between items-start ${config.text}`}>
-      <div className="flex items-start gap-3">
-        <Icon className={`w-5 h-5 ${config.iconColor} flex-shrink-0 mt-0.5`} />
-        <div>
-          {title && <p className="font-600 mb-1">{title}</p>}
-          <p className="text-sm">{message}</p>
+    <div className={`${config.border} ${config.bg} p-4 rounded-lg flex justify-between items-start gap-4 animate-fadeIn`}>
+      <div className="flex items-start gap-3 flex-1">
+        <Icon className={`w-6 h-6 ${config.iconColor} flex-shrink-0 mt-0.5`} />
+        <div className="flex-1">
+          {title && <p className={`${config.title} font-700 mb-1`}>{title}</p>}
+          <p className={`${config.message} text-sm`}>{message}</p>
         </div>
       </div>
       {onClose && (
         <button 
           onClick={onClose} 
-          className="text-gray-400 hover:text-gray-600 flex-shrink-0 ml-3 p-0.5 hover:bg-white/50 rounded transition-colors"
+          className={`${config.closeColor} flex-shrink-0 p-1 rounded-md transition-colors hover:bg-black/5`}
+          aria-label="Close alert"
         >
           <XMarkIcon className="w-5 h-5" />
         </button>

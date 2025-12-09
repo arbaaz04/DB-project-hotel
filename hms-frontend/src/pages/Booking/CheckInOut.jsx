@@ -14,6 +14,19 @@ import {
 } from '@heroicons/react/24/outline';
 
 const CheckInOut = ({ setView }) => {
+  const formatDate = (dateString) => {
+    if (!dateString) return 'N/A';
+    try {
+      const date = new Date(dateString);
+      const day = String(date.getDate()).padStart(2, '0');
+      const month = String(date.getMonth() + 1).padStart(2, '0');
+      const year = String(date.getFullYear()).slice(-2);
+      return `${day}/${month}/${year}`;
+    } catch (e) {
+      return dateString;
+    }
+  };
+
   const [reservations, setReservations] = useState([]);
   const [filteredReservations, setFilteredReservations] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -112,37 +125,32 @@ const CheckInOut = ({ setView }) => {
     { 
       key: 'reservation_id', 
       label: 'ID', 
-      width: '80px',
+      width: '60px',
       render: (value) => <span className="font-mono text-gray-600">#{value}</span>
     },
     {
       key: 'guest_name',
       label: 'Guest Name',
-      width: '180px',
-      render: (value) => <span className="font-600 text-gray-900">{value || 'N/A'}</span>
+      render: (value) => <span className="font-600 text-gray-900 block truncate">{value || 'N/A'}</span>
     },
     {
       key: 'room_number',
       label: 'Room',
-      width: '100px',
       render: (value) => <span className="inline-flex items-center px-2.5 py-0.5 rounded-lg bg-blue-50 text-blue-700 text-sm font-600">{value}</span>
     },
     { 
       key: 'check_in', 
       label: 'Check-in', 
-      width: '120px',
-      render: (value) => <span className="text-sm text-gray-600">{value}</span>
+      render: (value) => <span className="text-sm text-gray-600">{formatDate(value)}</span>
     },
     { 
       key: 'check_out', 
       label: 'Check-out', 
-      width: '120px',
-      render: (value) => <span className="text-sm text-gray-600">{value}</span>
+      render: (value) => <span className="text-sm text-gray-600">{formatDate(value)}</span>
     },
     {
       key: 'current_status',
       label: 'Status',
-      width: '120px',
       render: (value) => {
         const statusConfig = {
           'checked-in': { bg: 'bg-green-50', text: 'text-green-700', label: 'Checked In' },
@@ -169,7 +177,7 @@ const CheckInOut = ({ setView }) => {
   }
 
   return (
-    <div className="h-full flex flex-col space-y-6">
+    <div className="h-full flex flex-col space-y-4 pb-6">
       {alert && (
         <Alert
           type={alert.type}
@@ -180,45 +188,45 @@ const CheckInOut = ({ setView }) => {
       )}
 
       {/* Stats */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-5">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 shrink-0 w-full">
+        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-3">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm font-600 text-gray-600">Checked In</p>
-              <p className="text-3xl font-700 text-gray-900 mt-2">
+              <p className="text-xs font-600 text-gray-600">Checked In</p>
+              <p className="text-2xl font-700 text-gray-900 mt-1">
                 {reservations.filter(r => r.current_status === 'checked-in').length}
               </p>
             </div>
-            <div className="p-3 rounded-lg bg-green-50 text-green-600">
-              <ClockIcon className="w-6 h-6" />
+            <div className="p-2 rounded-lg bg-green-50 text-green-600">
+              <ClockIcon className="w-5 h-5" />
             </div>
           </div>
         </div>
 
-        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-5">
+        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-3">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm font-600 text-gray-600">Checked Out</p>
-              <p className="text-3xl font-700 text-gray-900 mt-2">
+              <p className="text-xs font-600 text-gray-600">Checked Out</p>
+              <p className="text-2xl font-700 text-gray-900 mt-1">
                 {reservations.filter(r => r.current_status === 'checked-out').length}
               </p>
             </div>
-            <div className="p-3 rounded-lg bg-gray-50 text-gray-600">
-              <CalendarIcon className="w-6 h-6" />
+            <div className="p-2 rounded-lg bg-gray-50 text-gray-600">
+              <CalendarIcon className="w-5 h-5" />
             </div>
           </div>
         </div>
 
-        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-5">
+        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-3">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm font-600 text-gray-600">Total</p>
-              <p className="text-3xl font-700 text-gray-900 mt-2">
+              <p className="text-xs font-600 text-gray-600">Total</p>
+              <p className="text-2xl font-700 text-gray-900 mt-1">
                 {reservations.filter(r => ['checked-in', 'checked-out'].includes(r.current_status)).length}
               </p>
             </div>
-            <div className="p-3 rounded-lg bg-blue-50 text-blue-600">
-              <UserIcon className="w-6 h-6" />
+            <div className="p-2 rounded-lg bg-blue-50 text-blue-600">
+              <UserIcon className="w-5 h-5" />
             </div>
           </div>
         </div>
@@ -235,23 +243,21 @@ const CheckInOut = ({ setView }) => {
         {/* Filters */}
         <div className="px-6 py-4 bg-gray-50 border-b border-gray-200">
           <div className="flex flex-col sm:flex-row gap-3">
-            <div className="flex-1 relative">
-              <MagnifyingGlassIcon className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 pointer-events-none" />
+            <div className="flex-1">
               <input
                 type="text"
                 placeholder="Search by guest name, room, or ID..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-transparent"
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-transparent"
               />
             </div>
 
-            <div className="relative w-full sm:w-48">
-              <FunnelIcon className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 pointer-events-none" />
+            <div className="w-full sm:w-48">
               <select
                 value={statusFilter}
                 onChange={(e) => setStatusFilter(e.target.value)}
-                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-1 focus:ring-blue-500 appearance-none bg-white"
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-1 focus:ring-blue-500 appearance-none bg-white"
               >
                 <option value="checked-in">Checked In</option>
                 <option value="checked-out">Checked Out</option>
