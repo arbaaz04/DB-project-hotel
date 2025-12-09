@@ -47,8 +47,6 @@ That's it! The `start_hotel` script will automatically:
 - ✓ Run `npm install` in both folders (if `node_modules` are missing)
 - ✓ Start backend (Node/Express) on port `4000`
 - ✓ Start frontend (Vite) on port `5173`
-- ✓ Display live logs from both services
-- ✓ Stop both cleanly when you press `Ctrl+C`
 
 Open **http://localhost:5173** in your browser once it's running.
 
@@ -75,7 +73,7 @@ Frontend (React) → Backend API (Express) → Database (PL/pgSQL functions)
 
 ## Database Schema & Functions
 
-We have 7 core tables:
+We have 10 core tables:
 - `staff` - user accounts
 - `guest` - hotel guests
 - `room_type` - room categories
@@ -83,6 +81,9 @@ We have 7 core tables:
 - `rate_plan` - pricing by date
 - `reservation` - bookings
 - `service_item` - add-on services
+- `charge_transaction` - transaction records for charges
+- `payment` - payment records
+- `minibar_charge` - minibar charges linked to reservations
 
 **SQL files to load (in order):**
 1. `supabase-tables.sql` - creates all tables
